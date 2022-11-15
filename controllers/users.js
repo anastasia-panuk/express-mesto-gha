@@ -33,8 +33,10 @@ module.exports.getUserId = (req, res) => {
       res.send(userId);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         res.status(NOT_FOUND_ERR).send({ message: 'Пользователь по указанному _id не найден.' });
+      } else if (err.name === 'CastError') {
+        res.status(BAD_REQUEST_ERR).send({ message: 'Пользователь по указанному _id не найден.' });
       } else {
         res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });
       }
