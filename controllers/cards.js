@@ -44,9 +44,9 @@ module.exports.putLikes = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST_ERR).send({ message: 'Переданы некорректные данные для постановки лайка.' });
+        res.status(NOT_FOUND_ERR).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       } else if (err.name === 'CastError') {
-        res.status(NOT_FOUND_ERR).send({ message: 'Передан несуществующий _id карточки.' });
+        res.status(BAD_REQUEST_ERR).send({ message: 'Передан несуществующий _id карточки.' });
       } else {
         res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });
       }
