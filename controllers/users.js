@@ -29,11 +29,12 @@ module.exports.createUsers = (req, res) => {
 
 module.exports.getUserId = (req, res) => {
   User.findById(req.params.userId)
-    .then((userId) => {
-      if (!userId) {
+    .then((user) => {
+      if (!user) {
         res.status(NOT_FOUND_ERR).send({ message: 'Пользователь по указанному _id не найден.' });
+      } else {
+        res.send(user);
       }
-      res.send(userId);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
