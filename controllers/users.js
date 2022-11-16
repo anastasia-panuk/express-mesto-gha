@@ -52,12 +52,15 @@ module.exports.updUser = (req, res) => {
     { name, about },
     { new: true },
   )
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST_ERR).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
-      } else if (err.name === 'CastError') {
+    .then((user) => {
+      if (!user) {
         res.status(NOT_FOUND_ERR).send({ message: 'Пользователь по указанному _id не найден.' });
+      }
+      res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        res.status(BAD_REQUEST_ERR).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
       } else {
         res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });
       }
