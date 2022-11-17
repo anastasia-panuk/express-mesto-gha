@@ -50,7 +50,10 @@ module.exports.updUser = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true },
+    {
+      new: true,
+      runValidators: true,
+    },
   )
     .then((user) => {
       if (!user) {
@@ -59,7 +62,7 @@ module.exports.updUser = (req, res) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST_ERR).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
       } else {
         res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });
@@ -73,16 +76,20 @@ module.exports.updAvatar = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
-    { new: true },
+    {
+      new: true,
+      runValidators: true,
+    },
   )
     .then((user) => {
+      if (!user) {
+        res.status(NOT_FOUND_ERR).send({ message: 'Пользователь по указанному _id не найден.' });
+      }
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST_ERR).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
-      } else if (err.name === 'CastError') {
-        res.status(NOT_FOUND_ERR).send({ message: 'Пользователь по указанному _id не найден.' });
       } else {
         res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });
       }
