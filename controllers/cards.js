@@ -5,7 +5,12 @@ const NOT_FOUND_ERR = 404;
 const INTERNAL_SERVER_ERR = 500;
 
 module.exports.getCards = (req, res) => {
-  Card.find({}).then((cards) => res.send(cards))
+  Card.find({}).then((card) => {
+    if (card === null) {
+      res.status(NOT_FOUND_ERR).send({ message: 'Карточка не найдена.' });
+    }
+    res.send(card);
+  })
     .catch(() => {
       res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });
     });
@@ -69,13 +74,13 @@ module.exports.deleteLikes = (req, res) => {
     },
   )
     .then((card) => {
-      if (!card) {
+      if (card === null) {
         res.status(NOT_FOUND_ERR).send({ message: 'Передан несуществующий _id карточки.' });
       }
       res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(BAD_REQUEST_ERR).send({ message: 'Переданы некорректные данные для снятия лайка.' });
       } else {
         res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });
