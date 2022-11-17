@@ -5,12 +5,7 @@ const NOT_FOUND_ERR = 404;
 const INTERNAL_SERVER_ERR = 500;
 
 module.exports.getCards = (req, res) => {
-  Card.find({}).then((card) => {
-    if (card === null) {
-      res.status(NOT_FOUND_ERR).send({ message: 'Карточка не найдена.' });
-    }
-    res.send(card);
-  })
+  Card.find({}).then((cards) => res.send(cards))
     .catch(() => {
       res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });
     });
@@ -32,10 +27,19 @@ module.exports.createCards = (req, res) => {
 
 module.exports.getCardId = (req, res) => {
   Card.findById(req.params.cardId)
-    .then((cardId) => res.send(cardId))
+    .then((card) => {
+      if (card === null) {
+        res.status(NOT_FOUND_ERR).send({ message: 'Карточка с указанным _id не найдена.' });
+      } else {
+        card.remove()
+          .then(() => res.send(card));
+      }
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(NOT_FOUND_ERR).send({ message: 'Карточка с указанным _id не найдена.' });
+        res.status(BAD_REQUEST_ERR).send({ message: 'Переданы некорректные данные карточки.' });
+      } else {
+        res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });
       }
     });
 };
