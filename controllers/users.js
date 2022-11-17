@@ -62,7 +62,7 @@ module.exports.updUser = (req, res) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(BAD_REQUEST_ERR).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
       } else {
         res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });

@@ -45,13 +45,13 @@ module.exports.putLikes = (req, res) => {
     },
   )
     .then((card) => {
-      if (!card) {
+      if (card === null) {
         res.status(NOT_FOUND_ERR).send({ message: 'Передан несуществующий _id карточки.' });
       }
       res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(BAD_REQUEST_ERR).send({ message: 'Переданы некорректные данные для постановки лайка.' });
       } else {
         res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });
