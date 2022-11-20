@@ -1,8 +1,10 @@
 const User = require('../models/user');
-
-const BAD_REQUEST_ERR = 400;
-const NOT_FOUND_ERR = 404;
-const INTERNAL_SERVER_ERR = 500;
+const {
+  BAD_REQUEST_ERR,
+  NOT_FOUND_ERR,
+  INTERNAL_SERVER_ERR,
+  CREATED_STATUS,
+} = require('../utils/constants/constants');
 
 module.exports.getUsers = (req, res) => {
   User.find({}).then((users) => res.send(users))
@@ -16,7 +18,7 @@ module.exports.createUsers = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => {
-      res.send(user);
+      res.status(CREATED_STATUS).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -37,14 +39,14 @@ module.exports.getUserId = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST_ERR).send({ message: 'Пользователь с указанным _id не найден' });
+        res.status(BAD_REQUEST_ERR).send({ message: 'Передан невалидный _id пользователя' });
       } else {
         res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });
       }
     });
 };
 
-module.exports.updUser = (req, res) => {
+module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(
@@ -70,7 +72,7 @@ module.exports.updUser = (req, res) => {
     });
 };
 
-module.exports.updAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -88,7 +90,7 @@ module.exports.updAvatar = (req, res) => {
       res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(BAD_REQUEST_ERR).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
       } else {
         res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });

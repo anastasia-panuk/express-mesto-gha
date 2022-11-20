@@ -1,11 +1,18 @@
 const Card = require('../models/card');
-
-const BAD_REQUEST_ERR = 400;
-const NOT_FOUND_ERR = 404;
-const INTERNAL_SERVER_ERR = 500;
+const {
+  BAD_REQUEST_ERR,
+  NOT_FOUND_ERR,
+  INTERNAL_SERVER_ERR,
+  CREATED_STATUS,
+} = require('../utils/constants/constants');
 
 module.exports.getCards = (req, res) => {
-  Card.find({}).then((cards) => res.send(cards))
+  Card.find({})
+    .populate([
+      'owner',
+      'likes',
+    ])
+    .then((cards) => res.send(cards))
     .catch(() => {
       res.status(INTERNAL_SERVER_ERR).send({ message: 'Ошибка сервера.' });
     });
@@ -15,7 +22,7 @@ module.exports.createCards = (req, res) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.send(card))
+    .then((card) => res.status(CREATED_STATUS).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST_ERR).send({ message: 'Переданы некорректные данные при создании карточки.' });
@@ -25,7 +32,7 @@ module.exports.createCards = (req, res) => {
     });
 };
 
-module.exports.getCardId = (req, res) => {
+module.exports.deleteCard = (req, res) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (card === null) {
