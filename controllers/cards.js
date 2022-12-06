@@ -14,7 +14,7 @@ module.exports.getCards = (req, res, next) => {
     ])
     .then((cards) => res.send(cards))
     .catch(() => {
-      next(new ServerError('Ошибка сервераю'));
+      next(new ServerError('Ошибка сервера.'));
     });
 };
 

@@ -6,7 +6,6 @@ const HTTPError = require('../errors/HTTPError');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ServerError = require('../errors/ServerError');
-
 const {
   CREATED_STATUS,
   UNIQUE_ERR,

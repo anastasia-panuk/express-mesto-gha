@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
+// const validator = require('validator');
 const bcrypt = require('bcryptjs');
-const { schemaAvatar, schemaEmail } = require('../validators/userValidator');
+
+// const avatarRegExp = /^https?:\/\/[www.]?[a-zA-Z0-9]+[\w\-._~:/?#[\]$&'()*+,;*]{2,}#?$/;
+// const emailRegExp = /^([a-z0-9_.-]+)@([a-z0-9_.-]+)\.([a-z.]{2,6})$/;
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -18,19 +21,22 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-    validate: {
-      validator: (v) => !schemaAvatar.validate(v).error,
-      message: () => 'Указана некорректная ссылка на изображение.',
-    },
+    // validate: {
+    //   validator: (v) => validator.isUrl(v, {
+    //     message: 'Указана некорректная ссылка на
+    // изображение', protocols: ['http', 'https', 'ftp'], require_tld: true, require_protocol: true,
+    //   }),
+    // },
+    //  message: 'Указана некорректная ссылка изображение',
   },
   email: {
-    type: 'String',
+    type: String,
     required: true,
     unique: true,
-    validate: {
-      validator: (v) => !schemaEmail.validate(v).error,
-      message: () => 'Указана некорректный адрес почты.',
-    },
+    // validate: {
+    //   validator: (value) => validator.isEmail(value),
+    //   message: 'Указан некорректный адрес почты',
+    // },
   },
   password: {
     type: String,
@@ -64,5 +70,23 @@ const userSchema = new mongoose.Schema({
     },
   },
 });
+
+// userSchema.statics.findUserByCredentials = function ({ email, password }) {
+//   return this.findOne({ email })
+//     .select('+password')
+//     .then((user) => {
+//       if (!user) {
+//         return Promise.reject(new Error('Почта или пароль неверны'));
+//       }
+//       console.log(password, user.password);
+//       return bcrypt.compare(password, user.password)
+//         .then((matched) => {
+//           if (!matched) {
+//             return Promise.reject(new Error('Почта или пароль неверны'));
+//           }
+//           return user;
+//         });
+//     });
+// };
 
 module.exports = mongoose.model('user', userSchema);
