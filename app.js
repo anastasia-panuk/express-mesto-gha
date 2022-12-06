@@ -33,7 +33,6 @@ app.use('*', (req, res) => {
 });
 
 app.use(errors());
-
 app.use((err, req, res, next) => {
   const status = err.statusCode || INTERNAL_SERVER_ERR;
   const message = status === INTERNAL_SERVER_ERR ? 'Ошибка сервера' : err.message;

@@ -11,7 +11,7 @@ module.exports.bodyUser = celebrate({
     password: Joi.string().required(),
   }),
 });
-module.exports.paramsMe = celebrate({
+module.exports.paramsUser = celebrate({
   [Segments.PARAMS]: Joi.object({
     id: Joi.string().hex().length(24),
   }).required(),
