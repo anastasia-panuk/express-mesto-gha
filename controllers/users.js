@@ -44,8 +44,21 @@ module.exports.createUsers = (req, res, next) => {
     });
 };
 
+module.exports.login = (req, res, next) => User.findUserByCredentials(req.body)
+  .then((user) => {
+    const token = jwt.sign(
+      { _id: user._id },
+      NODE_ENV ? JWT_SECRET : 'dev-secret',
+      { expiresIn: '7d' },
+    );
+    res.send({ token });
+  })
+  .catch(() => {
+    next(new AuthorizationError('Почта или пароль неверны.'));
+  });
+
 module.exports.getUserId = (req, res, next) => {
-  User.findById(req.user._id)
+  User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь с указанным _id не найден');
@@ -57,6 +70,23 @@ module.exports.getUserId = (req, res, next) => {
         next(err);
       } else if (err.name === 'CastError') {
         next(new BadRequestError('Передан невалидный _id пользователя'));
+      } else {
+        next(err);
+      }
+    });
+};
+
+module.exports.getMe = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден.');
+      }
+      res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Передан невалидный _id пользователя.'));
       } else {
         next(err);
       }
@@ -113,36 +143,6 @@ module.exports.updateAvatar = (req, res, next) => {
         next(err);
       } else if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении аватара.'));
-      } else {
-        next(err);
-      }
-    });
-};
-
-module.exports.login = (req, res, next) => User.findUserByCredentials(req.body)
-  .then((user) => {
-    const token = jwt.sign(
-      { _id: user._id },
-      NODE_ENV ? JWT_SECRET : 'dev-secret',
-      { expiresIn: '7d' },
-    );
-    res.send({ token });
-  })
-  .catch(() => {
-    next(new AuthorizationError('Почта или пароль неверны.'));
-  });
-
-module.exports.getMe = (req, res, next) => {
-  User.findById(req.user._id)
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователь не найден.');
-      }
-      res.send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Передан невалидный _id пользователя.'));
       } else {
         next(err);
       }

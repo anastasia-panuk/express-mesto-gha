@@ -23,10 +23,8 @@ mongoose.connect(DB_CONN);
 app.post('/signin', bodyAuth, login);
 app.post('/signup', bodyUser, createUsers);
 
-app.use(auth);
-
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
+app.use('/users', auth, require('./routes/users'));
+app.use('/cards', auth, require('./routes/cards'));
 
 app.use('*', (req, res) => {
   res.status(NOT_FOUND_ERR).send({ message: 'Страница не найдена' });
@@ -41,5 +39,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
+  console.log(`App listening on port ${PORT}`);
 });
