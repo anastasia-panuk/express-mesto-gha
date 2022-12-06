@@ -24,11 +24,12 @@ module.exports.createCards = (req, res, next) => {
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(CREATED_STATUS).send(card))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError({ message: 'Переданы некорректные данные при создании карточки.' }));
-      } else {
-        next(err);
-      }
+      // if (err.name === 'ValidationError') {
+      //   next(new BadRequestError({ message: 'Переданы некорректные
+      // данные при создании карточки.' }));
+      // } else {
+      next(err);
+      //      }
     });
 };
 

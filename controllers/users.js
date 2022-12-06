@@ -36,11 +36,12 @@ module.exports.createUsers = (req, res, next) => {
         next(err);
       } else if (err.code === UNIQUE_ERR) {
         next(new ConflictError('Пользователь с таким email уже зарегистрирован.'));
-      } else if (err.name === 'ValidationError') {
-        next(new BadRequestError('Передан невалидный _id пользователя'));
       } else {
         next(err);
       }
+      // else if (err.name === 'ValidationError') {
+      //   next(new BadRequestError('Передан невалидный _id пользователя'));
+      // }
     });
 };
 
