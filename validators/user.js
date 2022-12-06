@@ -13,7 +13,7 @@ module.exports.bodyUser = celebrate({
 });
 module.exports.paramsUser = celebrate({
   [Segments.PARAMS]: Joi.object({
-    id: Joi.string().hex().length(24),
+    userId: Joi.string().hex().length(24),
   }).required(),
 });
 module.exports.bodyAuth = celebrate({
