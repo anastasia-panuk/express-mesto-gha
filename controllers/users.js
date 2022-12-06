@@ -5,7 +5,8 @@ const User = require('../models/user');
 const HTTPError = require('../errors/HTTPError');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
-const ServerError = require('../errors/ServerError');
+const AuthorizationError = require('../errors/AuthorizationError');
+const ConflictError = require('../errors/ConflictError');
 const {
   CREATED_STATUS,
   UNIQUE_ERR,
@@ -15,8 +16,8 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUsers = (req, res, next) => {
   User.find({}).then((users) => res.send(users))
-    .catch(() => {
-      next(new ServerError('Ошибка сервераю'));
+    .catch((err) => {
+      next(err);
     });
 };
 
@@ -34,11 +35,11 @@ module.exports.createUsers = (req, res, next) => {
       if (err instanceof HTTPError) {
         next(err);
       } else if (err.code === UNIQUE_ERR) {
-        next(new BadRequestError('Пользователь с таким email уже зарегистрирован.'));
+        next(new ConflictError('Пользователь с таким email уже зарегистрирован.'));
       } else if (err.name === 'ValidationError') {
         next(new BadRequestError('Передан невалидный _id пользователя'));
       } else {
-        next(new ServerError('Ошибка сервера'));
+        next(err);
       }
     });
 };
@@ -57,7 +58,7 @@ module.exports.getUserId = (req, res, next) => {
       } else if (err.name === 'CastError') {
         next(new BadRequestError('Передан невалидный _id пользователя'));
       } else {
-        next(new ServerError('Ошибка сервера'));
+        next(err);
       }
     });
 };
@@ -85,7 +86,7 @@ module.exports.updateUser = (req, res, next) => {
       } else if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении профиля.'));
       } else {
-        next(new ServerError('Ошибка сервера'));
+        next(err);
       }
     });
 };
@@ -113,7 +114,7 @@ module.exports.updateAvatar = (req, res, next) => {
       } else if (err.name === 'CastError' || err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении аватара.'));
       } else {
-        next(new ServerError('Ошибка сервера'));
+        next(err);
       }
     });
 };
@@ -128,7 +129,7 @@ module.exports.login = (req, res, next) => User.findUserByCredentials(req.body)
     res.send({ token });
   })
   .catch(() => {
-    next(new BadRequestError('Почта или пароль неверны.'));
+    next(new AuthorizationError('Почта или пароль неверны.'));
   });
 
 module.exports.getMe = (req, res, next) => {
@@ -143,7 +144,7 @@ module.exports.getMe = (req, res, next) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Передан невалидный _id пользователя.'));
       } else {
-        next(new ServerError('Ошибка сервера'));
+        next(err);
       }
     });
 };
