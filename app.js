@@ -17,7 +17,6 @@ const { PORT = 3000, DB_CONN = 'mongodb://localhost:27017/mestodb' } = process.e
 const app = express();
 
 app.use(express.json());
-app.use(errors());
 
 mongoose.connect(DB_CONN);
 
@@ -33,9 +32,11 @@ app.use('*', (req, res) => {
   res.status(NOT_FOUND_ERR).send({ message: 'Страница не найдена' });
 });
 
+app.use(errors());
+
 app.use((err, req, res, next) => {
   const status = err.statusCode || INTERNAL_SERVER_ERR;
-  const message = err.message || 'Неизвестная ошибка';
+  const message = status === INTERNAL_SERVER_ERR ? 'Ошибка сервера' : err.message;
   res.status(status).send({ message });
   next();
 });
