@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
-// const validator = require('validator');
+const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const { urlRegExp } = require('../utils/constants/constants');
 
 // const avatarRegExp = /^https?:\/\/[www.]?[a-zA-Z0-9]+[\w\-._~:/?#[\]$&'()*+,;*]{2,}#?$/;
 // const emailRegExp = /^([a-z0-9_.-]+)@([a-z0-9_.-]+)\.([a-z.]{2,6})$/;
@@ -21,22 +22,19 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-    // validate: {
-    //   validator: (v) => validator.isUrl(v, {
-    //     message: 'Указана некорректная ссылка на
-    // изображение', protocols: ['http', 'https', 'ftp'], require_tld: true, require_protocol: true,
-    //   }),
-    // },
-    //  message: 'Указана некорректная ссылка изображение',
+    validate: {
+      validator: (v) => (urlRegExp).test(v),
+      message: () => 'Указана некорректная ссылка изображение',
+    },
   },
   email: {
     type: String,
     required: true,
     unique: true,
-    // validate: {
-    //   validator: (value) => validator.isEmail(value),
-    //   message: 'Указан некорректный адрес почты',
-    // },
+    validate: {
+      validator: (v) => validator.isEmail(v),
+      message: () => 'Указан некорректный адрес почты',
+    },
   },
   password: {
     type: String,
