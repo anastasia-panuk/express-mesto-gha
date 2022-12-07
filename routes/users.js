@@ -8,12 +8,11 @@ const {
 } = require('../controllers/users');
 const {
   paramsUser,
-  bodyUsers,
   bodyMe,
   bodyAvatar,
 } = require('../validators/user');
 
-router.get('/', bodyUsers, getUsers);
+router.get('/', getUsers);
 router.patch('/me', bodyMe, updateUser);
 router.get('/me', getMe);
 router.patch('/me/avatar', bodyAvatar, updateAvatar);

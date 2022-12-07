@@ -5,7 +5,7 @@ const User = require('../models/user');
 const HTTPError = require('../errors/HTTPError');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
-const AuthorizationError = require('../errors/AuthorizationError');
+// const AuthorizationError = require('../errors/AuthorizationError');
 const ConflictError = require('../errors/ConflictError');
 const {
   CREATED_STATUS,
@@ -25,7 +25,13 @@ module.exports.createUsers = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
     .then((hash) => {
       req.body.password = hash;
-      return User.create(req.body);
+      return User.create({
+        name: req.body.name,
+        about: req.body.about,
+        avatar: req.body.avatar,
+        email: req.body.email,
+        password: hash,
+      });
     })
     .then((userData) => {
       const { password: removed, ...user } = userData.toObject();
@@ -53,8 +59,8 @@ module.exports.login = (req, res, next) => User.findUserByCredentials(req.body)
     );
     res.send({ token });
   })
-  .catch(() => {
-    next(new AuthorizationError('Почта или пароль неверны.'));
+  .catch((err) => {
+    next(err);
   });
 
 module.exports.getUserId = (req, res, next) => {

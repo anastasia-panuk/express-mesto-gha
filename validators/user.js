@@ -22,12 +22,6 @@ module.exports.bodyAuth = celebrate({
     password: Joi.string().required(),
   }),
 });
-module.exports.bodyUsers = celebrate({
-  [Segments.BODY]: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-  }),
-});
 module.exports.bodyMe = celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().min(2).max(30),
