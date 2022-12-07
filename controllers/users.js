@@ -23,7 +23,11 @@ module.exports.getUsers = (req, res, next) => {
 module.exports.createUsers = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
-      ...req.body, password: hash,
+      name: req.body.name,
+      about: req.body.about,
+      avatar: req.body.avatar,
+      email: req.body.email,
+      password: hash,
     }))
     .then((userData) => {
       const { password: removed, ...user } = userData.toObject();

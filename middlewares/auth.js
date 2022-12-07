@@ -19,7 +19,7 @@ module.exports = (req, res, next) => {
         NODE_ENV ? JWT_SECRET : 'dev-secret',
       );
     } catch (err) {
-      throw new AuthorizationError('Необходима авторизация.');
+      next(new AuthorizationError('Необходима авторизация.'));
     }
 
     req.user = payload;
