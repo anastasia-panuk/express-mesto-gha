@@ -2,9 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const {
-  NOT_FOUND_ERR,
   INTERNAL_SERVER_ERR,
 } = require('./utils/constants/constants');
+const NotFoundError = require('./errors/NotFoundError');
 const auth = require('./middlewares/auth');
 const {
   login,
@@ -26,8 +26,8 @@ app.post('/signup', bodyUser, createUsers);
 app.use('/users', auth, require('./routes/users'));
 app.use('/cards', auth, require('./routes/cards'));
 
-app.use('*', (req, res) => {
-  res.status(NOT_FOUND_ERR).send({ message: 'Страница не найдена' });
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
 });
 
 app.use(errors());

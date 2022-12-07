@@ -5,7 +5,6 @@ const User = require('../models/user');
 const HTTPError = require('../errors/HTTPError');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
-// const AuthorizationError = require('../errors/AuthorizationError');
 const ConflictError = require('../errors/ConflictError');
 const {
   CREATED_STATUS,
@@ -23,16 +22,9 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.createUsers = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
-    .then((hash) => {
-      req.body.password = hash;
-      return User.create({
-        name: req.body.name,
-        about: req.body.about,
-        avatar: req.body.avatar,
-        email: req.body.email,
-        password: hash,
-      });
-    })
+    .then((hash) => User.create({
+      ...req.body, password: hash,
+    }))
     .then((userData) => {
       const { password: removed, ...user } = userData.toObject();
       res.status(CREATED_STATUS).send(user);

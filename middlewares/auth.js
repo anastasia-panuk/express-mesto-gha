@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
   const { authorization = '' } = req.headers;
 
   if (!authorization) {
-    next(new AuthorizationError('Необходима авторизация.'));
+    throw new AuthorizationError('Необходима авторизация.');
   } else {
     const token = authorization.replace(/^Bearer*\s*/i, '');
     let payload;
@@ -19,7 +19,7 @@ module.exports = (req, res, next) => {
         NODE_ENV ? JWT_SECRET : 'dev-secret',
       );
     } catch (err) {
-      next(new AuthorizationError('Необходима авторизация.'));
+      throw new AuthorizationError('Необходима авторизация.');
     }
 
     req.user = payload;

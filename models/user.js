@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const { urlRegExp } = require('../utils/constants/constants');
+const AuthorizationError = require('../errors/AuthorizationError');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -46,12 +47,12 @@ const userSchema = new mongoose.Schema({
         .select('+password')
         .then((userData) => {
           if (!userData) {
-            return Promise.reject(new Error('Почта или пароль неверны'));
+            throw new AuthorizationError('Почта или пароль неверны');
           }
           return bcrypt.compare(password, userData.password)
             .then((isSuccess) => {
               if (!isSuccess) {
-                return Promise.reject(new Error('Почта или пароль неверны'));
+                throw new AuthorizationError('Почта или пароль неверны');
               }
 
               const {
