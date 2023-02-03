@@ -1,5 +1,5 @@
 [![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
-# Backend часть сервиса Mesto, с помощью которого пользователь может делиться фото с другими.
+# Backend часть сервиса Mesto, с помощью которого пользователь может делиться фото.
 
 В проекте реализованы:
 - роутинг
